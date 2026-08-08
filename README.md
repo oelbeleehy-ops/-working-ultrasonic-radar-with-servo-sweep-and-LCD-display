@@ -1,7 +1,7 @@
 # Ultrasonic Radar (v1)
 
 An Arduino project that sweeps an HC-SR04 ultrasonic sensor back and forth using
-a servo motor and displays live distance + angle readings on a 16x2 LCD.
+a servo motor and displays live distance + angle readings on a 16x2 LCD. Videos and photos are attached.
 
 ## Hardware
 
