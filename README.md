@@ -137,9 +137,87 @@ Default thresholds (edit `NEAR_CM`, `MID_CM`, `FAR_CM` in the sketch to tune):
 - ~~Button needs to be clicked twice to disarm from armed mode~~
 - ~~Button glitches from time to time~~
 
+## v1.2: IR remote arm/disarm + joystick manual control
+
+V1.2 adds two new ways to control the radar. Requires
+the **IRremote** library (Sketch → Include Library → Manage Libraries →
+search "IRremote" → install the one by Armin Joachimsmeyer). 
+- added an ir controller to arm/disarm
+- added a joystick to control servo.
+- used built in joystick button to switch between manual control and sweep
+- added a kill switch and a reset switch on the ir controller
+
+
+### New hardware
+
+| Component | Arduino Pin | Notes |
+|---|---|---|
+| IR receiver (e.g. TSOP38238) OUT | A0 | VCC → 5V, GND → GND |
+| Joystick VRx | A4 | X axis controls servo angle |
+| Joystick SW | Pin 13 | Uses internal pull-up, no resistor needed |
+
+VRy (the joystick's Y axis) isn't used.
+
+Image of circuit:
+<img width="5792" height="4344" alt="IMG_2283" src="https://github.com/user-attachments/assets/41ad4eac-acac-46c1-b5e6-fe974ce22854" />
+
+### Arm/disarm
+
+The physical button (Pin 2) **toggles** arm/disarm. The IR remote uses two
+dedicated buttons instead — Button 1 always arms, Button 2 always disarms —
+so there's no ambiguity about which state you land in. Note this still keeps the button.
+Video of Arming and disarming using IR remote:
+
+https://github.com/user-attachments/assets/c265c4aa-e386-4518-bccf-44238a942f19
+
+
+
+This project's remote codes are already set in the sketch:
+```cpp
+const unsigned long ARM_CODE    = 0xF30CFF00UL; // Button 1
+const unsigned long DISARM_CODE = 0xE718FF00UL; // Button 2
+```
+### Sweep vs. manual aiming
+
+Clicking the joystick's SW button toggles between:
+- **Sweep mode** (default): servo auto-sweeps 0–180° and back, as in v1.
+- **Manual mode**: servo angle follows the joystick's X axis directly.
+Video of toggle between sweep mode and manual mode including use of manual mode:
+
+https://github.com/user-attachments/assets/da248ad3-0686-4b68-8ca4-c2cd8ca745f2
+
+
+### Why the sweep logic changed
+
+Earlier versions used blocking `for` loops with `delay()` calls to sweep the
+servo, which meant the Arduino couldn't check for button presses, IR codes,
+or joystick input while a sweep was in progress. v1.2 rewrites the sweep as
+a non-blocking step (`runSweepStep()`), timed with `millis()` instead of
+`delay()`, so all inputs stay responsive at all times.
+
+### Added a kill switch and reset switch on the ir controller
+
+In previous versions, to disarm and detach the servo, you had to unplug the arduino and remove power from the circuit, which means that it wasn't practical in real world use cases. So, a kill switch is added which automatically disarms the radar and detaches the servo. It also stops taking distance readings and angle readings. To have the radar working again a restart button is used on the IR remote which starts the radar as if it was just plugged in.
+Video of kill and restart in action:
+
+
+https://github.com/user-attachments/assets/57ed3a88-ddad-436f-8d90-e7c41e58f124
+
+
+### Known issues
+- ~~issue with ir remote only working while disarmed, as soon as armed it doesn't respond due to sharing the internal timer with the buzzer~~
+- ~~joystick toggle and control didn't work as expected~~
+- ~~often needs multiple clicks to respond to arm command or a disarm command~~
+- ~~joystick makes erratic movements when plugged in~~
+- ~~kill switch doesn't kill sometimes~~
+- 
 ## Version history
 
 - **v1** — Initial working version: servo sweep, distance measurement, and
   live LCD display of distance + angle.
--**v1.1** — Added armed/disarmed mode via push button, with LED proximity
+- **v1.1** — Added armed/disarmed mode via push button, with LED proximity
   ranking and a buzzer alert when armed.
+- **v1.2** — Added IR remote for arm/disarm (Button 1 arms, Button 2
+  disarms) alongside the physical button, and a joystick for manual servo
+  aiming (toggled against auto-sweep via the joystick's click button).
+  Sweep logic rewritten to be non-blocking. A kill switch and restart switch have been added to simplify turning the radar on and off
