@@ -210,7 +210,18 @@ https://github.com/user-attachments/assets/57ed3a88-ddad-436f-8d90-e7c41e58f124
 - ~~often needs multiple clicks to respond to arm command or a disarm command~~
 - ~~joystick makes erratic movements when plugged in~~
 - ~~kill switch doesn't kill sometimes~~
-- 
+  
+## v1.3: Python based GUI made to visualise objects in contact with the radar
+
+V1.3 adds a radar gui showing what the angle , distance and objects on a 180 degree semi circle.
+- optimised the arduino gui code
+- linked the python code to the serial monitor to feed the data in
+video in operation:
+
+
+https://github.com/user-attachments/assets/b053262f-00bb-4c4b-bc9a-e2639be7b12e
+
+
 ## Version history
 
 - **v1** — Initial working version: servo sweep, distance measurement, and
@@ -221,3 +232,4 @@ https://github.com/user-attachments/assets/57ed3a88-ddad-436f-8d90-e7c41e58f124
   disarms) alongside the physical button, and a joystick for manual servo
   aiming (toggled against auto-sweep via the joystick's click button).
   Sweep logic rewritten to be non-blocking. A kill switch and restart switch have been added to simplify turning the radar on and off
+- **v1.3** — Added a GUI python-based program that shows what the radar is visualising using the serial monitor of the ardino
